@@ -14,6 +14,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SaleController;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Controllers\EmbazadoRecordController;
+//encargado
+use App\Http\Controllers\EncargadoController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -27,22 +30,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     
-    Route::get('/customers', [CustomerController::class, 'index'])->middleware(RoleMiddleware::class.':admin');
+    Route::get('/customers', [CustomerController::class, 'getCustomers'])->middleware(RoleMiddleware::class.':admin');
     
 
     Route::middleware(RoleMiddleware::class.':encargado')->group(function () {
-        Route::get('/products', [ProductController::class, 'index']);
-        Route::post('/products', [ProductController::class, 'store']);
+       // Route::get('/products', [ProductController::class, 'index']);
+        //Route::post('/products', [ProductController::class, 'store']);
         Route::put('/products/{id}', [ProductController::class, 'update']);
         Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
-        Route::get('/sales', [SaleController::class, 'index']);
-        Route::post('/sales', [SaleController::class, 'store']);
+        Route::get('/sales', [EncargadoController::class, 'getSales']);
+        Route::post('/sales', [EncargadoController::class, 'storeSale']);
+        //Route::get('/sales', [SaleController::class, 'index']);
+        //Route::post('/sales', [SaleController::class, 'store']);
 
         Route::get('/purchases', [PurchaseController::class, 'index']);
         Route::post('/purchases', [PurchaseController::class, 'store']);
 
         Route::get('/suppliers', [SupplierController::class, 'index']);
+
+        Route::post('/products', [EncargadoController::class, 'storeProduct']);
+        Route::get('/products', [EncargadoController::class, 'getProducts']);
     });
 
     Route::middleware(RoleMiddleware::class.':operario')->group(function () {

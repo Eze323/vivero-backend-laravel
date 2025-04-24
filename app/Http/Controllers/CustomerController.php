@@ -6,73 +6,48 @@ use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use Carbon\Carbon;
+use App\Models\Reward;
 
 class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function getCustomers()
     {
-        $weekStartDate = Carbon::parse('2025-04-07');
-        return Customer::all()->map(function ($customer) use ($weekStartDate) {
+        $weekStartDate = Carbon::today()->startOfWeek();
+
+        $customers = Customer::with('sales')->get()->map(function ($customer) use ($weekStartDate) {
+            $weeklyPurchases = $customer->getWeeklyPurchases($weekStartDate);
+            $customer->is_regular = $weeklyPurchases >= 3;
+            $customer->save();
+
+            if ($customer->is_regular) {
+                $existingReward = Reward::where('customer_id', $customer->id)
+                    ->where('week_start_date', $weekStartDate)
+                    ->first();
+
+                if (!$existingReward) {
+                    Reward::create([
+                        'customer_id' => $customer->id,
+                        'reward_type' => 'descuento',
+                        'reward_value' => 10.00,
+                        'week_start_date' => $weekStartDate,
+                    ]);
+                }
+            }
+
             return [
                 'id' => $customer->id,
                 'name' => $customer->name,
-                'weekly_purchases' => $customer->getWeeklyPurchases($weekStartDate),
+                'weekly_purchases' => $weeklyPurchases,
                 'is_regular' => $customer->is_regular,
                 'reward' => $customer->rewards()
                     ->where('week_start_date', $weekStartDate)
                     ->first(['reward_type', 'reward_value']),
             ];
         });
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCustomerRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Customer $customer)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Customer $customer)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCustomerRequest $request, Customer $customer)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Customer $customer)
-    {
-        //
+        return response()->json($customers);
     }
 }

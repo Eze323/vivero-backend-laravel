@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Sale;
 
-class SaletController extends Controller
+class SaleController extends Controller
 {
     public function index()
     {
