@@ -19,6 +19,7 @@ use App\Http\Controllers\EmbazadoRecordController;
 use App\Http\Controllers\EncargadoController;
 
 
+
 Route::post('/login', [AuthController::class, 'login']);
 
 // Ruta de prueba
