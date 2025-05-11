@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('customer_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->integer('quantity');
-            $table->decimal('total_price', 8, 2);
+            // Agrega estas columnas:
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Clave foránea al vendedor (si usas user_id)
+            $table->string('customer'); // Nombre completo del cliente
+            $table->string('email')->nullable(); // Email del cliente (puede ser opcional)
+            $table->string('seller'); // Nombre del vendedor (si no usas user_id directamente para esto)
+            $table->date('date'); // Fecha de la venta
+            $table->time('time')->nullable(); // Hora de la venta (puede ser opcional)
+            $table->string('status')->default('Pendiente'); // Estado de la venta (con un valor por defecto)
+            $table->decimal('total_price', 10, 2)->default(0); // Precio total de la venta
             $table->timestamps();
         });
     }

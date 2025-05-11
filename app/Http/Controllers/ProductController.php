@@ -15,9 +15,10 @@ class ProductController extends Controller
             return [
                 'id' => $product->id,
                 'name' => $product->name,
-                'type' => $product->type,
+                'category' => $product->category,
                 'price' => $product->final_price,
                 'stock' => $product->stock,
+                'image_url' => $product->image_url,
                 'pot_size' => $product->pot_size,
                 'supplier_prices' => $product->supplierPrices->map(function ($supplierPrice) {
                     return [
@@ -44,10 +45,11 @@ class ProductController extends Controller
     {
         $product = Product::create([
             'name' => $request->name,
-            'type' => $request->type,
+            'category' => $request->category,
             'price' => $request->price,
             'pot_size' => $request->pot_size,
             'stock' => 0,
+            'image_url' => $request->image_url,
         ]);
 
         if ($request->has('pot_prices')) {
@@ -68,9 +70,11 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $product->update([
             'name' => $request->name,
-            'type' => $request->type,
+            'category' => $request->category,
             'price' => $request->price,
             'pot_size' => $request->pot_size,
+            'stock' => $request->stock,
+            'image_url' => $request->image_url,
         ]);
 
         if ($request->has('pot_prices')) {

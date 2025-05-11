@@ -18,6 +18,7 @@ use App\Http\Controllers\EmbazadoRecordController;
 //encargado
 use App\Http\Controllers\EncargadoController;
 
+
 Route::post('/login', [AuthController::class, 'login']);
 
 // Ruta de prueba
@@ -39,10 +40,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/products/{id}', [ProductController::class, 'update']);
         Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
-        Route::get('/sales', [EncargadoController::class, 'getSales']);
-        Route::post('/sales', [EncargadoController::class, 'storeSale']);
-        //Route::get('/sales', [SaleController::class, 'index']);
-        //Route::post('/sales', [SaleController::class, 'store']);
+        //Route::get('/sales', [EncargadoController::class, 'getSales']);
+        //Route::post('/sales', [EncargadoController::class, 'storeSale']);
+                // Rutas de Ventas para Encargado
+                Route::get('/sales', [SaleController::class, 'index']); // Listar ventas
+                Route::post('/sales', [SaleController::class, 'store']); // Crear venta
+                Route::put('/sales/{sale}', [SaleController::class, 'update']); // <-- Agregar: Ruta para editar venta por ID (usar binding de modelo)
+                Route::delete('/sales/{sale}', [SaleController::class, 'destroy']); // <-- Agregar: Ruta para eliminar venta por ID (usar binding de modelo)
+                Route::get('/sales/{sale}', [SaleController::class, 'show']); 
 
         Route::get('/purchases', [PurchaseController::class, 'index']);
         Route::post('/purchases', [PurchaseController::class, 'store']);
