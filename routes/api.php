@@ -23,7 +23,11 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Ruta de prueba
 Route::get('/test', function () {
-    return response()->json(['message' => 'API funcionando correctamente']);
+    return response()->json([
+        'message' => 'API funcionando correctamente',
+        'status' => 'OK',
+        'db_connection' => DB::connection()->getPdo() ? 'Conectado' : 'No conectado',
+    ]);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
