@@ -76,104 +76,31 @@ class SaleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
-    {
-         // --- 1. Validation ---
-        // Validate the main sale data
-        $request->validate([
-            'customer' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'seller' => 'required|string|max:255', // Assuming seller is stored by name for simplicity
-            'date' => 'required|date',
-            'time' => 'nullable|date_format:H:i',
-            'status' => 'required|string|in:Pendiente,Completada,Cancelada', // Validate allowed statuses
-            'items' => 'required|array|min:1', // Ensure items is a required array with at least one item
-            // IMPORTANT: Validate product_id if sending from frontend, or product name if finding by name
-            'items.*.product' => 'required|string|max:255', // Assuming product name is sent
-            'items.*.quantity' => 'required|integer|min:1', // Validate quantity
-            'items.*.unitPrice' => 'required|numeric|min:0', // Validate unit price (frontend key)
-        ]);
+    
+public function store(Request $request)
+{
+    $request->validate([
+        'customer' => 'required|string|max:255',
+        'email' => 'nullable|email|max:255',
+        'seller' => 'required|string|max:255',
+        'date' => 'required|date',
+        'time' => 'nullable|date_format:H:i',
+        'status' => 'required|string|in:Pendiente,Completada,Cancelada',
+        'items' => 'required|array|min:1',
+        'items.*.product_id' => 'required|exists:products,id', // Cambiado de product name a product_id
+        'items.*.quantity' => 'required|integer|min:1',
+        'items.*.unitPrice' => 'required|numeric|min:0',
+    ]);
 
-        // --- 2. Process Items and Calculate Total within a Transaction ---
-        $totalPrice = 0;
-        $processedItems = []; // Array to store processed item data for SaleItem creation
-
-        DB::beginTransaction(); // Start database transaction
-
-        try {
-            foreach ($request->items as $itemData) {
-                // Find the product in the database based on name
-                // This assumes product names are unique and reliable.
-                // Using product_id from the frontend is generally safer.
-                $product = Product::where('name', $itemData['product'])->first();
-
-                if (!$product) {
-                     // Rollback transaction and return error if product not found
-                     DB::rollBack();
-                     return response()->json(['message' => 'Producto no encontrado: ' . $itemData['product']], 404);
-                }
-
-                // Check stock (if managing stock)
-                if ($product->stock < $itemData['quantity']) {
-                    // Rollback transaction and return error if insufficient stock
-                    DB::rollBack();
-                    return response()->json(['message' => 'Stock insuficiente para el producto: ' . $product->name], 400);
-                }
-
-                // Calculate subtotal for the item
-                $subtotal = $itemData['quantity'] * $itemData['unitPrice']; // Use the unitPrice sent from frontend
-                $totalPrice += $subtotal; // Add to the total sale price
-
-                // Prepare item data for creation after sale is created
-                $processedItems[] = [
-                    'product_id' => $product->id,
-                    'quantity' => $itemData['quantity'],
-                    'unit_price' => $itemData['unitPrice'], // Store the price at time of sale
-                    'subtotal' => $subtotal,
-                    // Add other relevant fields if needed (e.g., product name copy)
-                ];
-
-                // Decrement stock (within the transaction)
-                $product->decrement('stock', $itemData['quantity']);
-            }
-
-            // --- 3. Create the Main Sale Record ---
-            $sale = Sale::create([
-                // 'id' => (string) Str::uuid(), // Example using UUID for ID
-                // Or let database handle auto-increment ID
-                'user_id' => auth()->id(), // Assuming the authenticated user is the seller
-                'customer' => $request->customer, // Store customer name directly or link to customer_id
-                'email' => $request->email,
-                'seller' => $request->seller, // Store seller name directly or link to seller_id
-                'date' => $request->date,
-                'time' => $request->time,
-                'status' => $request->status,
-                'total_price' => $totalPrice, // Use the calculated total
-                // Add other sale-specific fields
-            ]);
-
-            // --- 4. Create Sale Items ---
-            foreach ($processedItems as $item) {
-                // Link the item to the newly created sale
-                $item['sale_id'] = $sale->id;
-                SaleItem::create($item);
-                // Or using the relationship if defined in Sale model:
-                // $sale->saleItems()->create($item); // <-- Usar saleItems() aquí
-            }
-
-            DB::commit(); // Commit the transaction if everything was successful
-
-            // --- 5. Return Response ---
-            // Load the saleItems relationship with product details for the response
-            // Return a single SaleResource for the created sale
-            return SaleResource::make($sale->load('saleItems.product')); // <-- Usar SaleResource::make
-
-        } catch (\Exception $e) {
-            DB::rollBack(); // Rollback transaction on any error
-            // Log the error: Log::error('Error storing sale: ' . $e->getMessage());
-            return response()->json(['message' => 'Error al registrar la venta', 'error' => $e->getMessage()], 500);
-        }
+    try {
+        $sale = app(SaleService::class)->createSale($request->all(), auth()->id());
+        Log::info('Sale created:', ['sale_id' => $sale->id]);
+        return SaleResource::make($sale)->additional(['message' => 'Venta registrada'])->response()->setStatusCode(201);
+    } catch (\Exception $e) {
+        Log::error('Error creating sale:', ['error' => $e->getMessage()]);
+        return response()->json(['message' => 'Error al registrar la venta', 'error' => $e->getMessage()], 500);
     }
+}
 
     /**
      * Update the specified sale in storage.

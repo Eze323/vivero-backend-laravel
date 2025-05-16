@@ -14,17 +14,28 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // Define los atributos del producto que quieres exponer
-        // Este Resource se usará principalmente dentro de SaleItemResource
         return [
             'id' => $this->id,
             'name' => $this->name,
             'category' => $this->category,
-            // Incluye solo los atributos relevantes para un item de venta si es necesario
-            // 'price' => $this->price, // Precio actual del producto (puede ser diferente al de la venta)
-            // 'stock' => $this->stock,
-            // 'pot_size' => $this->pot_size,
-            // 'image_url' => $this->image_url,
+            'price' => (float) $this->final_price,
+            'cost_price' => (float) $this->price,
+            'stock' => $this->stock,
+            'image_url' => $this->image_url,
+            'pot_size' => $this->pot_size,
+            'supplier_prices' => $this->whenLoaded('supplierPrices', fn() => $this->supplierPrices->map(fn($sp) => [
+                'supplier_id' => $sp->supplier_id,
+                'supplier_name' => $sp->supplier->name ?? 'Unknown',
+                'purchase_price' => (float) $sp->purchase_price,
+                'valid_from' => $sp->valid_from,
+                'valid_to' => $sp->valid_to,
+            ])),
+            'purchases' => $this->whenLoaded('purchases', fn() => $this->purchases->map(fn($p) => [
+                'supplier_name' => $p->supplier->name ?? 'Unknown',
+                'quantity' => $p->quantity,
+                'purchase_price' => (float) $p->purchase_price,
+                'purchase_date' => $p->purchase_date,
+            ])),
         ];
     }
 }
