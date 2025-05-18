@@ -35,6 +35,29 @@ class InvoiceController extends Controller
         return response()->json($invoices);
     }
 
+    public function show($id)
+    {
+        $invoice = Invoice::with(['supplier', 'purchases.product'])->findOrFail($id);
+        $formattedInvoice = [
+            'id' => $invoice->id,
+            'supplier' => $invoice->supplier->name ?? 'Unknown',
+            'invoice_number' => $invoice->invoice_number,
+            'issue_date' => $invoice->issue_date,
+            'total_amount' => (float) $invoice->total_amount,
+            'status' => $invoice->status,
+            'purchases' => $invoice->purchases->map(function ($purchase) {
+                return [
+                    'product' => $purchase->product->name ?? 'Unknown',
+                    'quantity' => $purchase->quantity,
+                    'purchase_price' => (float) $purchase->purchase_price,
+                ];
+            })->toArray(),
+        ];
+
+        Log::info('Invoice fetched:', $formattedInvoice);
+        return response()->json($formattedInvoice);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -48,6 +71,19 @@ class InvoiceController extends Controller
             'purchases.*.quantity' => 'required|integer|min:1',
             'purchases.*.purchase_price' => 'required|numeric|min:0',
         ]);
+
+        // Validar total_amount
+        $calculatedTotal = array_sum(array_map(function ($purchase) {
+            return $purchase['quantity'] * $purchase['purchase_price'];
+        }, $request->purchases));
+
+        if (abs($calculatedTotal - $request->total_amount) > 0.01) {
+            return response()->json([
+                'error' => 'El total_amount no coincide con la suma de las compras.',
+                'calculated_total' => $calculatedTotal,
+                'provided_total' => $request->total_amount
+            ], 422);
+        }
 
         try {
             DB::beginTransaction();
@@ -72,10 +108,7 @@ class InvoiceController extends Controller
                     'purchase_date' => $request->issue_date,
                 ]);
 
-                // Actualizar stock
                 $product->increment('stock', $purchaseData['quantity']);
-
-                // Actualizar precio de costo en el producto
                 $product->update(['price' => $purchaseData['purchase_price']]);
             }
 
@@ -85,7 +118,7 @@ class InvoiceController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating invoice:', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Error al crear la factura'], 500);
+            return response()->json(['error' => 'Error al crear la factura', 'details' => $e->getMessage()], 500);
         }
     }
 

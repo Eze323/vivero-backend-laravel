@@ -8,9 +8,10 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\EmbazadoRecordController;
+use App\Http\Controllers\EmbazadoController;
 use App\Http\Controllers\EncargadoController;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Controllers\InvoiceController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -44,7 +45,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/purchases', [PurchaseController::class, 'store']);
         Route::apiResource('invoices', InvoiceController::class);
 
-        Route::get('/suppliers', [SupplierController::class, 'index']);
+        Route::apiResource('suppliers', SupplierController::class);
 
         Route::put('/products/{product}/stock', [EncargadoController::class, 'updateStock']);
 
@@ -52,7 +53,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::middleware(RoleMiddleware::class.':operario')->group(function () {
-        Route::get('/embazado', [EmbazadoRecordController::class, 'index']);
-        Route::post('/embazado', [EmbazadoRecordController::class, 'store']);
+        Route::get('/embazado', [EmbazadoController::class, 'index']);
+        Route::post('/embazado', [EmbazadoController::class, 'store']);
     });
 });
