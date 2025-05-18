@@ -14,7 +14,7 @@ class ProductController extends Controller
         $products = Product::with(['supplierPrices.supplier', 'purchases.supplier', 'plantPotPrices'])->get()->map(function ($product) {
             return $this->formatProduct($product);
         });
-        Log::info('Products fetched:', $products->toArray());
+        
         return response()->json($products);
     }
 
@@ -46,7 +46,7 @@ class ProductController extends Controller
             );
         }
 
-        Log::info('Product created:', $product->toArray());
+        
         return response()->json(['message' => 'Producto creado', 'product' => $this->formatProduct($product)], 201);
     }
 
@@ -82,7 +82,7 @@ class ProductController extends Controller
             PlantPotPrice::where('product_id', $product->id)->delete();
         }
 
-        Log::info('Product updated:', $product->toArray());
+     
         return response()->json(['message' => 'Producto actualizado', 'product' => $this->formatProduct($product)], 200);
     }
 
@@ -90,7 +90,7 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $product->delete();
-        Log::info('Product deleted:', ['id' => $id]);
+     
         return response()->json(['message' => 'Producto eliminado'], 200);
     }
 

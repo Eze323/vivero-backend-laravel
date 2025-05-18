@@ -62,10 +62,10 @@ class EncargadoController extends Controller
                           ->orderBy('time', 'desc')
                           ->paginate(20);
 
-            Log::info('Sales fetched:', ['count' => $sales->count(), 'page' => $sales->currentPage()]);
+       
             return SaleResource::collection($sales);
         } catch (\Exception $e) {
-            Log::error('Error fetching sales:', ['error' => $e->getMessage()]);
+       
             return response()->json(['message' => 'Error al obtener las ventas'], 500);
         }
     }
@@ -93,10 +93,10 @@ class EncargadoController extends Controller
 
         try {
             $sale = $this->saleService->createSale($request->all(), auth()->id());
-            Log::info('Sale created:', ['sale_id' => $sale->id]);
+       
             return SaleResource::make($sale)->additional(['message' => 'Venta registrada'])->response()->setStatusCode(201);
         } catch (\Exception $e) {
-            Log::error('Error creating sale:', ['error' => $e->getMessage()]);
+       
             return response()->json(['message' => 'Error al registrar la venta: ' . $e->getMessage()], 500);
         }
     }
@@ -125,16 +125,16 @@ class EncargadoController extends Controller
             }
 
             $product->update(['stock' => $request->stock]);
-            Log::info('Stock updated:', [
-                'product_id' => $product->id,
-                'stock' => $product->stock,
-                'user_id' => auth()->id(),
-                'reason' => $request->reason,
-            ]);
+            // Log::info('Stock updated:', [
+            //     'product_id' => $product->id,
+            //     'stock' => $product->stock,
+            //     'user_id' => auth()->id(),
+            //     'reason' => $request->reason,
+            // ]);
             return ProductResource::make($product->load('supplierPrices', 'purchases'))
                 ->additional(['message' => 'Stock actualizado']);
         } catch (\Exception $e) {
-            Log::error('Error updating stock:', ['error' => $e->getMessage()]);
+            // Log::error('Error updating stock:', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'Error al actualizar el stock: ' . $e->getMessage()], 500);
         }
     }

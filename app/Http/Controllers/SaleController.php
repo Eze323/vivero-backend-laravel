@@ -94,10 +94,10 @@ public function store(Request $request)
 
     try {
         $sale = app(SaleService::class)->createSale($request->all(), auth()->id());
-        Log::info('Sale created:', ['sale_id' => $sale->id]);
+      
         return SaleResource::make($sale)->additional(['message' => 'Venta registrada'])->response()->setStatusCode(201);
     } catch (\Exception $e) {
-        Log::error('Error creating sale:', ['error' => $e->getMessage()]);
+      
         return response()->json(['message' => 'Error al registrar la venta', 'error' => $e->getMessage()], 500);
     }
 }
@@ -217,7 +217,7 @@ public function store(Request $request)
 
         } catch (\Exception $e) {
              DB::rollBack(); // Rollback transaction on any error
-             // Log the error: Log::error('Error updating sale: ' . $e->getMessage());
+      
              return response()->json(['message' => 'Error al actualizar la venta', 'error' => $e->getMessage()], 500);
         }
     }
@@ -255,7 +255,7 @@ public function store(Request $request)
 
         } catch (\Exception $e) {
              DB::rollBack(); // Rollback transaction on any error
-             // Log the error: Log::error('Error deleting sale: ' . $e->getMessage());
+      
              return response()->json(['message' => 'Error al eliminar la venta', 'error' => $e->getMessage()], 500);
         }
     }

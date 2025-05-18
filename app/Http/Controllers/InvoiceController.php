@@ -31,7 +31,7 @@ class InvoiceController extends Controller
             ];
         });
 
-        Log::info('Invoices fetched:', $invoices->toArray());
+      
         return response()->json($invoices);
     }
 
@@ -54,7 +54,7 @@ class InvoiceController extends Controller
             })->toArray(),
         ];
 
-        Log::info('Invoice fetched:', $formattedInvoice);
+       
         return response()->json($formattedInvoice);
     }
 
@@ -113,11 +113,11 @@ class InvoiceController extends Controller
             }
 
             DB::commit();
-            Log::info('Invoice created:', $invoice->toArray());
+          
             return response()->json(['message' => 'Factura creada', 'invoice' => $invoice], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error creating invoice:', ['error' => $e->getMessage()]);
+           
             return response()->json(['error' => 'Error al crear la factura', 'details' => $e->getMessage()], 500);
         }
     }
@@ -141,7 +141,7 @@ class InvoiceController extends Controller
             'status' => $request->status,
         ]);
 
-        Log::info('Invoice updated:', $invoice->toArray());
+     
         return response()->json(['message' => 'Factura actualizada', 'invoice' => $invoice], 200);
     }
 
@@ -159,11 +159,11 @@ class InvoiceController extends Controller
 
             $invoice->delete();
             DB::commit();
-            Log::info('Invoice deleted:', ['id' => $id]);
+        
             return response()->json(['message' => 'Factura eliminada'], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error deleting invoice:', ['error' => $e->getMessage()]);
+        
             return response()->json(['error' => 'Error al eliminar la factura'], 500);
         }
     }

@@ -20,7 +20,7 @@ class SupplierController extends Controller
                 'address' => $supplier->address,
             ];
         });
-        Log::info('Suppliers fetched:', $suppliers->toArray());
+        
         return response()->json($suppliers);
     }
 
@@ -35,7 +35,7 @@ class SupplierController extends Controller
             'phone' => $supplier->phone,
             'address' => $supplier->address,
         ];
-        Log::info('Supplier fetched:', $formattedSupplier);
+
         return response()->json($formattedSupplier);
     }
 
@@ -51,10 +51,10 @@ class SupplierController extends Controller
 
         try {
             $supplier = Supplier::create($request->only(['name','last_name', 'email', 'phone', 'address']));
-            Log::info('Supplier created:', $supplier->toArray());
+
             return response()->json($supplier, 201);
         } catch (\Exception $e) {
-            Log::error('Error creating supplier:', ['error' => $e->getMessage()]);
+
             return response()->json(['error' => 'Error al crear el proveedor'], 500);
         }
     }
@@ -72,10 +72,10 @@ class SupplierController extends Controller
         try {
             $supplier = Supplier::findOrFail($id);
             $supplier->update($request->only(['name', 'last_name', 'email', 'phone', 'address']));
-            Log::info('Supplier updated:', $supplier->toArray());
+
             return response()->json($supplier);
         } catch (\Exception $e) {
-            Log::error('Error updating supplier:', ['error' => $e->getMessage()]);
+
             return response()->json(['error' => 'Error al actualizar el proveedor'], 500);
         }
     }
@@ -85,10 +85,10 @@ class SupplierController extends Controller
         try {
             $supplier = Supplier::findOrFail($id);
             $supplier->delete();
-            Log::info('Supplier deleted:', ['id' => $id]);
+
             return response()->json(['message' => 'Proveedor eliminado']);
         } catch (\Exception $e) {
-            Log::error('Error deleting supplier:', ['error' => $e->getMessage()]);
+
             return response()->json(['error' => 'Error al eliminar el proveedor'], 500);
         }
     }

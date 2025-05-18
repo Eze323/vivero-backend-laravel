@@ -23,7 +23,7 @@ class PurchaseController extends Controller
             ];
         });
 
-        Log::info('Purchases fetched:', $purchases->toArray());
+      
         return response()->json($purchases);
     }
 
@@ -53,7 +53,7 @@ class PurchaseController extends Controller
         $product->increment('stock', $request->quantity);
         $product->update(['price' => $request->purchase_price]);
 
-        Log::info('Purchase created:', $purchase->toArray());
+ 
         return response()->json(['message' => 'Compra registrada', 'purchase' => $purchase], 201);
     }
 }
