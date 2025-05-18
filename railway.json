@@ -5,7 +5,6 @@
 },
     "deploy": {
       "runtime": "V2",
-      "healthcheckPath": "/api/test",
       "numReplicas": 1,
       "sleepApplication": false,
       "multiRegionConfig": {
