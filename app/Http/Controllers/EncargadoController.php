@@ -5,96 +5,137 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Services\SaleService;
+use App\Http\Resources\SaleResource;
+use App\Models\SaleItem;
+use App\Http\Resources\ProductResource;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 
 class EncargadoController extends Controller
 {
-    public function getSales()
+    protected $saleService;
+
+    public function __construct(SaleService $saleService)
     {
-        $sales = Sale::with('product', 'user', 'customer')->get();
-        return response()->json($sales);
+        $this->saleService = $saleService;
     }
 
-    public function storeSale(Request $request)
+    /**
+     * Obtener todas las ventas con filtros y paginación.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSales(Request $request)
     {
-        $product = Product::findOrFail($request->product_id);
-        $quantity = $request->quantity;
+        try {
+            $query = Sale::with(['saleItems.product', 'user', 'customer']);
 
-        $salePrice = $product->final_price;
-        $totalPrice = $salePrice * $quantity;
+            // Aplicar filtros
+            if ($request->has('search') && $request->search) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('id', $request->search)
+                      ->orWhere('customer', 'like', '%' . $request->search . '%')
+                      ->orWhere('email', 'like', '%' . $request->search . '%')
+                      ->orWhereHas('customer', fn($q2) => $q2->where('name', 'like', '%' . $request->search . '%')
+                          ->orWhere('email', 'like', '%' . $request->search . '%'))
+                      ->orWhereHas('saleItems.product', fn($q2) => $q2->where('name', 'like', '%' . $request->search . '%'));
+                });
+            }
 
-        $sale = Sale::create([
-            'user_id' => auth()->id(),
-            'customer_id' => $request->customer_id,
-            'product_id' => $product->id,
-            'quantity' => $quantity,
-            'total_price' => $totalPrice,
-        ]);
+            if ($request->has('status') && $request->status) {
+                $query->where('status', $request->status);
+            }
 
-        $product->decrement('stock', $quantity);
+            if ($request->has('date') && $request->date) {
+                $query->whereDate('date', $request->date);
+            }
 
-        return response()->json(['message' => 'Venta registrada', 'sale' => $sale]);
-    }
+            if ($request->has('seller') && $request->seller) {
+                $query->where('seller', $request->seller);
+            }
 
-    public function getProducts()
-    {
-        $products = Product::all()->map(function ($product) {
-            return [
-                'id' => $product->id,
-                'name' => $product->name,
-                'category' => $product->category,
-                'price' => $product->final_price,
-                'stock' => $product->stock,
-                'image_url' => $product->image_url,
-                'pot_size' => $product->pot_size,
-                'supplier_prices' => $product->supplierPrices->map(function ($supplierPrice) {
-                    return [
-                        'supplier_id' => $supplierPrice->supplier_id,
-                        'supplier_name' => $supplierPrice->supplier->name,
-                        'purchase_price' => $supplierPrice->purchase_price,
-                        'valid_from' => $supplierPrice->valid_from,
-                        'valid_to' => $supplierPrice->valid_to,
-                    ];
-                }),
-                'purchases' => $product->purchases->map(function ($purchase) {
-                    return [
-                        'supplier_name' => $purchase->supplier->name,
-                        'quantity' => $purchase->quantity,
-                        'purchase_price' => $purchase->purchase_price,
-                        'purchase_date' => $purchase->purchase_date,
-                    ];
-                }),
-            ];
-        });
-        return response()->json($products);
-    }
+            // Ordenar y paginar
+            $sales = $query->orderBy('date', 'desc')
+                          ->orderBy('time', 'desc')
+                          ->paginate(20);
 
-    public function updateStock(Request $request, Product $product)
-    {
-        $product->update(['stock' => $request->stock]);
-        return response()->json(['message' => 'Stock actualizado', 'product' => $product]);
-    }
-    
-    public function storeProduct(Request $request)
-{
-    $product = Product::create([
-        'name' => $request->name,
-        'category' => $request->category,
-        'price' => $request->price,
-        'pot_size' => $request->pot_size,
-        'stock' => 0,
-        'image_url' => $request->image_url,
-    ]);
-
-    if ($request->has('pot_prices')) {
-        foreach ($request->pot_prices as $potPrice) {
-            PlantPotPrice::create([
-                'product_id' => $product->id,
-                'pot_size' => $potPrice['pot_size'],
-                'price' => $potPrice['price'],
-            ]);
+            Log::info('Sales fetched:', ['count' => $sales->count(), 'page' => $sales->currentPage()]);
+            return SaleResource::collection($sales);
+        } catch (\Exception $e) {
+            Log::error('Error fetching sales:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Error al obtener las ventas'], 500);
         }
     }
 
-    return response()->json(['message' => 'Producto creado', 'product' => $product]);
-}
+    /**
+     * Crear una nueva venta.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storeSale(Request $request)
+    {
+        $request->validate([
+            'customer' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'seller' => 'required|string|max:255',
+            'date' => 'required|date',
+            'time' => 'nullable|date_format:H:i',
+            'status' => 'required|in:Pendiente,Completada,Cancelada',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.unitPrice' => 'required|numeric|min:0',
+        ]);
+
+        try {
+            $sale = $this->saleService->createSale($request->all(), auth()->id());
+            Log::info('Sale created:', ['sale_id' => $sale->id]);
+            return SaleResource::make($sale)->additional(['message' => 'Venta registrada'])->response()->setStatusCode(201);
+        } catch (\Exception $e) {
+            Log::error('Error creating sale:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Error al registrar la venta: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Actualizar el stock de un producto.
+     *
+     * @param Request $request
+     * @param Product $product
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateStock(Request $request, Product $product)
+    {
+        $request->validate([
+            'stock' => 'required|integer|min:0',
+            'reason' => 'nullable|string|max:255', // Opcional para auditoría
+        ]);
+
+        try {
+            // Verificar ventas pendientes que requieran stock
+            $pendingSales = SaleItem::where('product_id', $product->id)
+                ->whereHas('sale', fn($q) => $q->where('status', 'Pendiente'))
+                ->sum('quantity');
+            if ($request->stock < $pendingSales) {
+                return response()->json(['message' => 'No se puede reducir el stock, hay ventas pendientes'], 422);
+            }
+
+            $product->update(['stock' => $request->stock]);
+            Log::info('Stock updated:', [
+                'product_id' => $product->id,
+                'stock' => $product->stock,
+                'user_id' => auth()->id(),
+                'reason' => $request->reason,
+            ]);
+            return ProductResource::make($product->load('supplierPrices', 'purchases'))
+                ->additional(['message' => 'Stock actualizado']);
+        } catch (\Exception $e) {
+            Log::error('Error updating stock:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Error al actualizar el stock: ' . $e->getMessage()], 500);
+        }
+    }
 }

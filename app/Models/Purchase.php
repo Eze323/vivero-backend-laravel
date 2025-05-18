@@ -6,7 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Purchase extends Model
 {
-    protected $fillable = ['product_id', 'supplier_id', 'quantity', 'purchase_price', 'purchase_date'];
+    protected $fillable = [
+        'product_id', 
+        'supplier_id', 
+        'invoice_id',
+        'quantity', 
+        'purchase_price', 
+        'purchase_date'
+    ];
 
     public function product()
     {
@@ -16,5 +23,9 @@ class Purchase extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class);
     }
 }
