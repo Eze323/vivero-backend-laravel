@@ -35,6 +35,9 @@ class SaleService
                     $customer = Customer::create([
                         'email' => $data['email'],
                         'name' => $data['customer'],
+                        'last_name' => $data['last_name'] ?? null,
+                        'phone' => $data['phone'] ?? null,
+                        'is_regular' => false,
                     ]);
                 }
             }

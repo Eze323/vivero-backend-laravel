@@ -13,6 +13,8 @@ use App\Http\Resources\SaleResource;
 use App\Http\Resources\SaleItemResource;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\CustomerResource;
+use App\Services\SaleService;
+
 
 
 class SaleController extends Controller

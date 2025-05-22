@@ -11,7 +11,7 @@ class Customer extends Model
     /** @use HasFactory<\Database\Factories\CustomerFactory> */
     use HasFactory;
 
-    protected $filiable=[
+    protected $fillable=[
         'name',
         'last_name',
         'email',
