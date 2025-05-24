@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('last_name');
+            $table->string('address')->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('phone')->nullable();
             $table->boolean('is_regular')->default(false);

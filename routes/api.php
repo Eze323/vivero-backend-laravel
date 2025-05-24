@@ -12,6 +12,7 @@ use App\Http\Controllers\EmbazadoController;
 use App\Http\Controllers\EncargadoController;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Controllers\InvoiceController;
+use Illuminate\Support\Facades\DB;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -19,7 +20,8 @@ Route::get('/test', function () {
     return response()->json([
         'message' => 'API funcionando correctamente',
         'status' => 'OK',
-        'db_connection' => DB::connection()->getPdo() ? 'Conectado' : 'No conectado',
+        'db_connection' => DB::connection()->getPdo() ? 'Conectado en tu casa mami' : 'No conectado',
+       
     ]);
 });
 

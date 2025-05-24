@@ -5,8 +5,8 @@ namespace Database\Seeders;
 use App\Models\Customer;
 use App\Models\PlantPotPrice;
 use App\Models\Product;
-use App\Models\Sale; // Import the Sale model
-use App\Models\SaleItem; // Import the SaleItem model
+use App\Models\Sale;
+use App\Models\SaleItem;
 use App\Models\Supplier;
 use App\Models\SupplierPrice;
 use App\Models\User;
@@ -22,300 +22,286 @@ class DatabaseSeeder extends Seeder
         $adminUser = User::create([
             'name' => 'Jose',
             'email' => 'admin@vivero.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('password123'),
             'role' => 'admin',
         ]);
 
         $encargadoUser = User::create([
             'name' => 'Romina',
             'email' => 'encargado@vivero.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('password123'),
             'role' => 'encargado',
         ]);
 
         $operarioUser = User::create([
             'name' => 'Operario',
             'email' => 'operario@vivero.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('password123'),
             'role' => 'operario',
         ]);
 
-        // Proveedores (mantener como está)
-        $supplier1 = Supplier::create(['name' => 'Proveedor A', 'last_name' => 'Apellido A', 'company_name' => 'Compañía A', 'address' => 'Dirección A', 'phone' => '123456789']);
-        $supplier2 = Supplier::create(['name' => 'Proveedor B', 'last_name' => 'Apellido B', 'company_name' => 'Compañía B', 'address' => 'Dirección B', 'phone' => '987654321']);
+        // Proveedores
+        $supplier1 = Supplier::create([
+            'name' => 'Proveedor A',
+            'last_name' => 'Apellido A',
+            'company_name' => 'Compañía A',
+            'address' => 'Dirección A',
+            'phone' => '123456789',
+        ]);
 
-        // Productos (mantener como está, agregando variables para usarlas en las ventas)
+        $supplier2 = Supplier::create([
+            'name' => 'Proveedor B',
+            'last_name' => 'Apellido B',
+            'company_name' => 'Compañía B',
+            'address' => 'Dirección B',
+            'phone' => '987654321',
+        ]);
+
+        // Productos
         $planta1 = Product::create([
             'name' => 'Rosa',
             'category' => 'planta',
-            'price' => 500,
+            'price' => 600,
             'stock' => 10,
             'image_url' => 'https://images.pexels.com/photos/31962864/pexels-photo-31962864.jpeg',
             'pot_size' => 'mediana',
+            'description' => 'Rosa clásica de jardín, ideal para decoraciones.',
         ]);
 
         $planta2 = Product::create([
             'name' => 'Cactus',
             'category' => 'planta',
-            'price' => 800,
+            'price' => 900,
             'stock' => 20,
             'image_url' => 'https://images.pexels.com/photos/1302305/pexels-photo-1302305.jpeg',
             'pot_size' => 'pequeña',
+            'description' => 'Cactus resistente, requiere poco riego.',
         ]);
 
         $planta3 = Product::create([
             'name' => 'Eugenia',
             'category' => 'arbusto',
-            'price' => 300,
+            'price' => 400,
             'stock' => 20,
             'image_url' => 'https://eugeniasdelasabana.com/wp-content/uploads/2017/12/eu-5-600x600.jpg',
             'pot_size' => 'grande',
-        ]);
-        //plantines
-        $planta4= Product::create([
-            'name' => 'burrito',
-            'category' => 'plantin',
-            'price' => 350,
-            'stock' => 50,
-            'image_url' => 'https://sabordefazenda.com.br/wp-content/uploads/2021/02/WhatsApp-Image-2021-02-02-at-12.17.44.jpeg',
+            'description' => 'Arbusto ornamental para setos.',
         ]);
 
-        //plantas
+        $planta4 = Product::create([
+            'name' => 'Burrito',
+            'category' => 'plantin',
+            'price' => 400,
+            'stock' => 50,
+            'image_url' => 'https://sabordefazenda.com.br/wp-content/uploads/2021/02/WhatsApp-Image-2021-02-02-at-12.17.44.jpeg',
+            'description' => 'Plantín suculento, fácil de cultivar.',
+        ]);
+
         $planta5 = Product::create([
             'name' => 'Monstera Deliciosa',
             'category' => 'planta',
-            'price' => 2500,
+            'price' => 2800,
             'stock' => 15,
             'image_url' => 'https://images.pexels.com/photos/3097770/pexels-photo-3097770.jpeg',
+            'description' => 'Planta tropical con hojas grandes.',
         ]);
+
         $planta6 = Product::create([
             'name' => 'Ficus Lyrata',
             'category' => 'planta',
-            'price' => 3200,
+            'price' => 3500,
             'stock' => 8,
             'image_url' => 'https://images.pexels.com/photos/2123482/pexels-photo-2123482.jpeg',
+            'description' => 'Ficus elegante para interiores.',
         ]);
+
         $planta7 = Product::create([
             'name' => 'Semillas de Lavanda',
             'category' => 'semilla',
-            'price' => 450,
+            'price' => 500,
             'stock' => 50,
             'image_url' => 'https://images.pexels.com/photos/4505161/pexels-photo-4505161.jpeg',
+            'description' => 'Semillas para cultivar lavanda aromática.',
         ]);
+
         $planta8 = Product::create([
             'name' => 'Kit de Jardinería',
             'category' => 'herramienta',
-            'price' => 1800,
+            'price' => 2000,
             'stock' => 5,
-             'image_url' => 'https://images.pexels.com/photos/1301856/pexels-photo-1301856.jpeg',
+            'image_url' => 'https://images.pexels.com/photos/1301856/pexels-photo-1301856.jpeg',
+            'description' => 'Kit completo para jardineros principiantes.',
         ]);
 
-
-        $tierra = Product::create([ // Renamed from $otro to $tierra for clarity
+        $tierra = Product::create([
             'name' => 'Tierra Premium (saco)',
-            'category' => 'otro',
-            'price' => 1200,
+            'category' => 'sustrato',
+            'price' => 1500,
             'stock' => 50,
-            'image_url' => 'https://example.com/tierra.jpg',
+            'image_url' => 'https://images.pexels.com/photos/5561378/pexels-photo-5561378.jpeg',
+            'description' => 'Sustrato enriquecido para plantas.',
         ]);
 
-        // Precios de macetas para plantas (mantener como está)
-        PlantPotPrice::create(['product_id' => $planta1->id, 'pot_size' => 'pequeña', 'price' => 350]);
-        PlantPotPrice::create(['product_id' => $planta1->id, 'pot_size' => 'mediana', 'price' => 700]);
-        PlantPotPrice::create(['product_id' => $planta1->id, 'pot_size' => 'grande', 'price' => 1800]);
+        // Precios de macetas
+        $potSizes = [
+            ['product_id' => $planta1->id, 'pot_size' => 'pequeña', 'price' => 400],
+            ['product_id' => $planta1->id, 'pot_size' => 'mediana', 'price' => 800],
+            ['product_id' => $planta1->id, 'pot_size' => 'grande', 'price' => 2000],
+            ['product_id' => $planta2->id, 'pot_size' => 'pequeña', 'price' => 350],
+            ['product_id' => $planta2->id, 'pot_size' => 'mediana', 'price' => 500],
+            ['product_id' => $planta2->id, 'pot_size' => 'grande', 'price' => 1300],
+            ['product_id' => $planta3->id, 'pot_size' => 'pequeña', 'price' => 450],
+            ['product_id' => $planta3->id, 'pot_size' => 'mediana', 'price' => 900],
+            ['product_id' => $planta3->id, 'pot_size' => 'grande', 'price' => 2200],
+            ['product_id' => $planta4->id, 'pot_size' => 'pequeña', 'price' => 350],
+            ['product_id' => $planta4->id, 'pot_size' => 'mediana', 'price' => 700],
+            ['product_id' => $planta4->id, 'pot_size' => 'grande', 'price' => 1700],
+            ['product_id' => $planta4->id, 'pot_size' => 'extra grande', 'price' => 2200],
+            ['product_id' => $planta4->id, 'pot_size' => 'extra extra grande', 'price' => 2800],
+            ['product_id' => $planta5->id, 'pot_size' => 'mediana', 'price' => 1000],
+            ['product_id' => $planta5->id, 'pot_size' => 'grande', 'price' => 2500],
+            ['product_id' => $planta6->id, 'pot_size' => 'mediana', 'price' => 1200],
+            ['product_id' => $planta6->id, 'pot_size' => 'grande', 'price' => 2700],
+        ];
 
-        PlantPotPrice::create(['product_id' => $planta2->id, 'pot_size' => 'pequeña', 'price' => 300]);
-        PlantPotPrice::create(['product_id' => $planta2->id, 'pot_size' => 'mediana', 'price' => 450]);
-        PlantPotPrice::create(['product_id' => $planta2->id, 'pot_size' => 'grande', 'price' => 1200]);
-        PlantPotPrice::create(['product_id' => $planta3->id, 'pot_size' => 'pequeña', 'price' => 400]);
-        PlantPotPrice::create(['product_id' => $planta3->id, 'pot_size' => 'mediana', 'price' => 800]);
-        PlantPotPrice::create(['product_id' => $planta3->id, 'pot_size' => 'grande', 'price' => 2000]);
-        PlantPotPrice::create(['product_id' => $planta4->id, 'pot_size' => 'pequeña', 'price' => 300]);
-        PlantPotPrice::create(['product_id' => $planta4->id, 'pot_size' => 'mediana', 'price' => 600]);
-        PlantPotPrice::create(['product_id' => $planta4->id, 'pot_size' => 'grande', 'price' => 1500]);
-        PlantPotPrice::create(['product_id' => $planta4->id, 'pot_size' => 'extra grande', 'price' => 2000]);
-        PlantPotPrice::create(['product_id' => $planta4->id, 'pot_size' => 'extra extra grande', 'price' => 2500]);
-        PlantPotPrice::create(['product_id' => $tierra->id, 'pot_size' => 'pequeña', 'price' => 200]);
-        PlantPotPrice::create(['product_id' => $tierra->id, 'pot_size' => 'mediana', 'price' => 400]);
-        PlantPotPrice::create(['product_id' => $tierra->id, 'pot_size' => 'grande', 'price' => 1000]);
+        foreach ($potSizes as $potSize) {
+            PlantPotPrice::create($potSize);
+        }
 
+        // Precios de proveedores
+        $supplierPrices = [
+            ['product_id' => $planta1->id, 'supplier_id' => $supplier1->id, 'purchase_price' => 450, 'valid_from' => Carbon::parse('2025-01-01'), 'valid_to' => null],
+            ['product_id' => $planta2->id, 'supplier_id' => $supplier2->id, 'purchase_price' => 650, 'valid_from' => Carbon::parse('2025-01-01'), 'valid_to' => null],
+            ['product_id' => $planta3->id, 'supplier_id' => $supplier1->id, 'purchase_price' => 300, 'valid_from' => Carbon::parse('2025-01-01'), 'valid_to' => null],
+            ['product_id' => $planta4->id, 'supplier_id' => $supplier2->id, 'purchase_price' => 300, 'valid_from' => Carbon::parse('2025-01-01'), 'valid_to' => null],
+            ['product_id' => $planta5->id, 'supplier_id' => $supplier1->id, 'purchase_price' => 2000, 'valid_from' => Carbon::parse('2025-01-01'), 'valid_to' => null],
+            ['product_id' => $planta6->id, 'supplier_id' => $supplier2->id, 'purchase_price' => 2500, 'valid_from' => Carbon::parse('2025-01-01'), 'valid_to' => null],
+            ['product_id' => $planta7->id, 'supplier_id' => $supplier1->id, 'purchase_price' => 350, 'valid_from' => Carbon::parse('2025-01-01'), 'valid_to' => null],
+            ['product_id' => $planta8->id, 'supplier_id' => $supplier2->id, 'purchase_price' => 1400, 'valid_from' => Carbon::parse('2025-01-01'), 'valid_to' => null],
+            ['product_id' => $tierra->id, 'supplier_id' => $supplier1->id, 'purchase_price' => 1000, 'valid_from' => Carbon::parse('2025-01-01'), 'valid_to' => null],
+        ];
 
-        // Precios de proveedores (mantener como está)
-        SupplierPrice::create([
-            'product_id' => $planta1->id,
-            'supplier_id' => $supplier1->id,
-            'purchase_price' => 500,
-            'valid_from' => Carbon::parse('2025-01-01'),
-            'valid_to' => null,
-        ]);
+        foreach ($supplierPrices as $price) {
+            SupplierPrice::create($price);
+        }
 
-        SupplierPrice::create([
-            'product_id' => $planta2->id,
-            'supplier_id' => $supplier2->id,
-            'purchase_price' => 800,
-            'valid_from' => Carbon::parse('2025-01-01'),
-            'valid_to' => null,
-        ]);
-        SupplierPrice::create([
-            'product_id' => $planta3->id,
-            'supplier_id' => $supplier1->id,
-            'purchase_price' => 300,
-            'valid_from' => Carbon::parse('2025-01-01'),
-            'valid_to' => null,
-        ]);
-        SupplierPrice::create([
-            'product_id' => $planta4->id,
-            'supplier_id' => $supplier2->id,
-            'purchase_price' => 350,
-            'valid_from' => Carbon::parse('2025-01-01'),
-            'valid_to' => null,
-        ]);
-        SupplierPrice::create([
-            'product_id' => $tierra->id,
-            'supplier_id' => $supplier1->id,
-            'purchase_price' => 1200,
-            'valid_from' => Carbon::parse('2025-01-01'),
-            'valid_to' => null,
-        ]);
-
-
-        // Clientes (mantener como está, agregando variables para usarlas en las ventas)
+        // Clientes
         $customer1 = Customer::create([
             'name' => 'Carlos',
             'last_name' => 'Rodríguez',
-            'email'=>'carlos@example.com',
-            'phone'=>'123456789',
+            'email' => 'carlos@example.com',
+            'phone' => '123456789',
+            'address' => 'Calle Falsa 123, Buenos Aires',
             'is_regular' => true,
         ]);
+
         $customer2 = Customer::create([
             'name' => 'Laura',
             'last_name' => 'Martínez',
-            'email'=>'laura@example.com',
-            'phone'=>'987654321',
-            'is_regular' => false]);
+            'email' => 'laura@example.com',
+            'phone' => '987654321',
+            'address' => 'Avenida Siempre Viva 456, Mendoza',
+            'is_regular' => false,
+        ]);
 
         $customer3 = Customer::create([
             'name' => 'Miguel',
             'last_name' => 'Torres',
-            'email'=>'miguel@example.com',
-            'phone'=>'555555555',
-             'is_regular' => true,
+            'email' => 'miguel@example.com',
+            'phone' => '555555555',
+            'address' => 'Ruta 40, km 100, Córdoba',
+            'is_regular' => true,
         ]);
 
+        // Ventas
+        $sales = [
+            [
+                'user_id' => $encargadoUser->id,
+                'customer_id' => $customer1->id,
+                'customer' => $customer1->name . ' ' . $customer1->last_name, // Added customer field
+                'email' => $customer1->email,
+                'seller' => $encargadoUser->name,
+                'date' => '2025-05-24',
+                'time' => '14:30:00',
+                'status' => 'Completada',
+                'total_price' => 0,
+                'items' => [
+                    ['product_id' => $planta1->id, 'quantity' => 5, 'unit_price' => 600],
+                    ['product_id' => $tierra->id, 'quantity' => 2, 'unit_price' => 1500],
+                    ['product_id' => $planta8->id, 'quantity' => 1, 'unit_price' => 2000],
+                ],
+            ],
+            [
+                'user_id' => $encargadoUser->id,
+                'customer_id' => $customer2->id,
+                'customer' => $customer2->name . ' ' . $customer2->last_name, // Added customer field
+                'email' => $customer2->email,
+                'seller' => $encargadoUser->name,
+                'date' => '2025-05-24',
+                'time' => '15:45:00',
+                'status' => 'Pendiente',
+                'total_price' => 0,
+                'items' => [
+                    ['product_id' => $planta7->id, 'quantity' => 3, 'unit_price' => 500],
+                    ['product_id' => $planta2->id, 'quantity' => 2, 'unit_price' => 900],
+                ],
+            ],
+            [
+                'user_id' => $encargadoUser->id,
+                'customer_id' => $customer3->id,
+                'customer' => $customer3->name . ' ' . $customer3->last_name, // Added customer field
+                'email' => $customer3->email,
+                'seller' => $encargadoUser->name,
+                'date' => '2025-05-24',
+                'time' => '16:20:00',
+                'status' => 'Completada',
+                'total_price' => 0,
+                'items' => [
+                    ['product_id' => $planta5->id, 'quantity' => 1, 'unit_price' => 2800],
+                    ['product_id' => $planta6->id, 'quantity' => 1, 'unit_price' => 3500],
+                    ['product_id' => $planta4->id, 'quantity' => 4, 'unit_price' => 400],
+                ],
+            ],
+        ];
 
-        // --- Ventas de Ejemplo con Items ---
+        foreach ($sales as $saleData) {
+            $sale = Sale::create([
+                'user_id' => $saleData['user_id'],
+                'customer_id' => $saleData['customer_id'],
+                'customer' => $saleData['customer'], // Include customer field
+                'email' => $saleData['email'],
+                'seller' => $saleData['seller'],
+                'date' => $saleData['date'],
+                'time' => $saleData['time'],
+                'status' => $saleData['status'],
+                'total_price' => 0,
+            ]);
 
-        // Venta 1
-        $sale1 = Sale::create([
-            'user_id' => $encargadoUser->id, // Asignar a un usuario vendedor
-            'customer' => $customer1->name . ' ' . $customer1->last_name, // O usar customer_id si tienes esa columna
-            'email' => $customer1->email,
-            'seller' => $encargadoUser->name, // O usar seller_id si tienes esa columna
-            'date' => '2025-04-15',
-            'time' => '14:30',
-            'status' => 'Completada',
-            'total_price' => 0, // Se calculará sumando los subtotales de los items
-        ]);
+            $totalPrice = 0;
+            foreach ($saleData['items'] as $itemData) {
+                $product = Product::find($itemData['product_id']);
+                if ($product->stock < $itemData['quantity']) {
+                    throw new \Exception("Stock insuficiente para el producto {$product->name}");
+                }
 
-        // Items para Venta 1
-        $item1_1 = SaleItem::create([
-            'sale_id' => $sale1->id,
-            'product_id' => $planta1->id, // Rosa
-            'quantity' => 5,
-            'unit_price' => 500, // Precio al momento de la venta
-            'subtotal' => 5 * 500,
-        ]);
-         $item1_2 = SaleItem::create([
-            'sale_id' => $sale1->id,
-            'product_id' => $tierra->id, // Tierra Premium
-            'quantity' => 2,
-            'unit_price' => 1000, // Precio al momento de la venta
-            'subtotal' => 2 * 1000,
-        ]);
-         $item1_3 = SaleItem::create([
-            'sale_id' => $sale1->id,
-            'product_id' => $planta8->id, // Kit de Jardinería
-            'quantity' => 1,
-            'unit_price' => 1500, // Precio al momento de la venta
-            'subtotal' => 1 * 1500,
-        ]);
+                $subtotal = $itemData['quantity'] * $itemData['unit_price'];
+                SaleItem::create([
+                    'sale_id' => $sale->id,
+                    'product_id' => $itemData['product_id'],
+                    'quantity' => $itemData['quantity'],
+                    'unit_price' => $itemData['unit_price'],
+                    'subtotal' => $subtotal,
+                ]);
 
-        // Calcular y actualizar el total de la Venta 1
-        $sale1->total_price = $item1_1->subtotal + $item1_2->subtotal + $item1_3->subtotal;
-        $sale1->save();
+                // Update stock
+                $product->stock -= $itemData['quantity'];
+                $product->save();
 
+                $totalPrice += $subtotal;
+            }
 
-        // Venta 2
-        $sale2 = Sale::create([
-            'user_id' => $encargadoUser->id,
-            'customer' => $customer2->name . ' ' . $customer2->last_name,
-            'email' => $customer2->email,
-            'seller' => $encargadoUser->name,
-            'date' => '2025-04-15',
-            'time' => '15:45',
-            'status' => 'Pendiente',
-            'total_price' => 0,
-        ]);
-
-        // Items para Venta 2
-         $item2_1 = SaleItem::create([
-            'sale_id' => $sale2->id,
-            'product_id' => $planta7->id, // Semillas de Lavanda
-            'quantity' => 3,
-            'unit_price' => 400,
-            'subtotal' => 3 * 400,
-        ]);
-         $item2_2 = SaleItem::create([
-            'sale_id' => $sale2->id,
-            'product_id' => $planta2->id, // Cactus
-            'quantity' => 2,
-            'unit_price' => 800,
-            'subtotal' => 2 * 800,
-        ]);
-
-        // Calcular y actualizar el total de la Venta 2
-        $sale2->total_price = $item2_1->subtotal + $item2_2->subtotal;
-        $sale2->save();
-
-
-         // Venta 3
-        $sale3 = Sale::create([
-            'user_id' => $encargadoUser->id,
-            'customer' => $customer3->name . ' ' . $customer3->last_name,
-            'email' => $customer3->email,
-            'seller' => $encargadoUser->name,
-            'date' => '2025-04-15',
-            'time' => '16:20',
-            'status' => 'Completada',
-            'total_price' => 0,
-        ]);
-
-        // Items para Venta 3
-         $item3_1 = SaleItem::create([
-            'sale_id' => $sale3->id,
-            'product_id' => $planta5->id, // Monstera Deliciosa
-            'quantity' => 1,
-            'unit_price' => 2500,
-            'subtotal' => 1 * 2500,
-        ]);
-         $item3_2 = SaleItem::create([
-            'sale_id' => $sale3->id,
-            'product_id' => $planta6->id, // Ficus Lyrata
-            'quantity' => 1,
-            'unit_price' => 3200,
-            'subtotal' => 1 * 3200,
-        ]);
-         $item3_3 = SaleItem::create([
-            'sale_id' => $sale3->id,
-            'product_id' => $planta4->id, // burrito
-            'quantity' => 4,
-            'unit_price' => 350,
-            'subtotal' => 4 * 350,
-        ]);
-
-        // Calcular y actualizar el total de la Venta 3
-        $sale3->total_price = $item3_1->subtotal + $item3_2->subtotal + $item3_3->subtotal;
-        $sale3->save();
-
+            $sale->total_price = $totalPrice;
+            $sale->save();
+        }
     }
 }
